@@ -1,0 +1,20 @@
+{
+  "name": "pi-codebuddy",
+  "version": "1.0.0",
+  "description": "Tencent CodeBuddy as a native pi coding-agent provider — direct endpoint, ¥ quota bar, and live signed-catalog refresh",
+  "keywords": ["pi-package", "pi", "codebuddy", "tencent", "coding-agent", "extension"],
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com:Soywater/pi-codebuddy.git"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "peerDependencies": {
+    "@earendil-works/pi-coding-agent": "*"
+  },
+  "pi": {
+    "extensions": ["./extensions"]
+  }
+}
