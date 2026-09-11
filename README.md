@@ -20,13 +20,13 @@ Tencent CodeBuddy as a native [pi coding agent](https://github.com/earendil-work
 ## Install
 
 ```bash
-pi install git:github.com/Soywater/pi-codebuddy
+pi install git:github.com/Soywater-pi/pi-codebuddy
 ```
 
 Or try it without installing:
 
 ```bash
-pi -e git:github.com/Soywater/pi-codebuddy
+pi -e git:github.com/Soywater-pi/pi-codebuddy
 ```
 
 ## Setup

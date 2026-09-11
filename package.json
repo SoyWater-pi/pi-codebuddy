@@ -6,7 +6,7 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+ssh://git@github.com:Soywater/pi-codebuddy.git"
+    "url": "git+ssh://git@github.com:Soywater-pi/pi-codebuddy.git"
   },
   "engines": {
     "node": ">=20"
