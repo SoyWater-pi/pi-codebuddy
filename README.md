@@ -2,7 +2,15 @@
 
 Tencent CodeBuddy as a native [pi coding agent](https://github.com/earendil-works/pi-coding-agent) provider — the direct `https://copilot.tencent.com/v2` endpoint, a ¥ quota footer, and a live model-catalog refresh from TT Switch's signed feeds.
 
-> **Heads-up:** this extension targets Tencent's internal CodeBuddy endpoint and its intranet-adjacent APIs (tokens.woa.com quota, cnb.woa.com catalog feeds). It is useful on the Tencent intranet or wherever those endpoints are reachable.
+> **Heads-up:** the three parts have different network requirements:
+>
+> | Part | Endpoint | Off-intranet? |
+> |---|---|---|
+> | Provider (chat, models) | `copilot.tencent.com/v2` | **Yes** — works anywhere |
+> | `/quota` + ¥ footer | `openapi.token.woa.com` | No — intranet only |
+> | Catalog refresh | `cnb.woa.com` | No — intranet only |
+>
+> Off-network you still get working chat and the embedded model baseline; you lose the quota bar and live price/model updates. Those degrade quietly rather than erroring.
 
 ## What you get
 
@@ -31,14 +39,24 @@ pi -e git:github.com/Soywater-pi/pi-codebuddy
 
 ## Setup
 
+Credentials are per-machine and never belong in a repo. Two independent systems are involved, and the provider needs the first.
+
 ### API key (required)
 
+Without it the provider still registers, but passes the literal string `MISSING_SET_CODEBUDDY_API_KEY` — so you get an auth error on the first turn rather than at startup.
+
+Get a key from <https://tencent.sso.copilot.tencent.com/profile/keys>, then:
+
 ```bash
-# from tencent.sso.copilot.tencent.com/profile/keys
-echo -n "your-key" > ~/.pi/agent/.cb-api-key
+printf '%s' 'your-key' > ~/.pi/agent/.cb-api-key
+chmod 600 ~/.pi/agent/.cb-api-key
 # or
 export CODEBUDDY_API_KEY="your-key"
 ```
+
+Use `printf '%s'`, not `echo -n`: `-n` is not portable and some shells write a literal `-n`, silently corrupting the key. The `chmod` matters because this is a live credential.
+
+The env var wins over the file (`provider.ts:28`).
 
 Then in `~/.pi/agent/settings.json`:
 
@@ -51,11 +69,20 @@ Then in `~/.pi/agent/settings.json`:
 
 ### Quota token (optional, for /quota + footer)
 
+Only needed for `/quota` and the ¥ footer bar. Create a PAT at <https://tai.it.woa.com/user/pat>, authorized for 「Token看板」:
+
 ```bash
-echo -n "your-pat" > ~/.pi/agent/.taihu-token
+printf '%s' 'your-pat' > ~/.pi/agent/.taihu-token
+chmod 600 ~/.pi/agent/.taihu-token
 # or
 export TAIHU_API_KEY="your-pat"
 ```
+
+If missing, `/quota` reports `No Taihu PAT found — set TAIHU_API_KEY or ~/.pi/agent/.taihu-token`. A PAT that exists but lacks 「Token看板」 authorization fails at the API call instead, surfacing the HTTP error.
+
+### Credential path gotcha
+
+Both file paths are hardcoded to `~/.pi/agent/` (`join(homedir(), ".pi", "agent", ...)`) and do **not** honour `PI_CODING_AGENT_DIR`. If you relocate the agent dir — for example on NixOS — the config follows but these credential files do not. Put them in `~/.pi/agent/` regardless, or use the env vars.
 
 ### Environment overrides
 

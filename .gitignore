@@ -2,3 +2,8 @@ node_modules/
 out/
 *.log
 .DS_Store
+
+# The only dependency here is the host-provided peer @earendil-works/pi-coding-agent
+# (declared with a "*" range, deliberately not bundled). A lockfile would pin its
+# ~165 transitive packages, which is wrong for a pi extension and would rot fast.
+package-lock.json
